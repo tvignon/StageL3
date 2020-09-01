@@ -359,6 +359,20 @@ Proof.
        
 Admitted.
 
+Lemma bounded_imply_landau (f :{linear V->W}) :
+  bounded f -> ((f : V->W) =O_ (0:V) cst (1 : K^o)).
+Proof.
+  rewrite eqOP => bf.
+    move: (bf 1) => [M bm]. 
+    rewrite !nearE /=; exists M; split. by  apply : num_real.
+    move => x Mx; rewrite nearE nbhs_normP /=. 
+    exists 1; first by [].
+    move => y /=. rewrite -ball_normE /ball_ sub0r normrN /cst normr1 mulr1 => y1.
+    apply: (@le_trans _ _ M _ _).
+    apply: (bm y); by apply: ltW.
+    by apply: ltW.
+Qed.
+
 Lemma denseNE (S : set V) : (not(dense S)) -> (exists O, ( exists x, (open_nbhs x) O) /\ (O `&` S = set0)).
 Proof.
   rewrite /dense /open_nbhs => /existsNP [X /not_implyP [[x Xx] /not_implyP [ Ox /forallNP A ]]].
@@ -398,7 +412,7 @@ Proof.
      have Ci : continuous i.
      + have Li : linear i by apply Propf.
        have Bi : bounded i by apply Propf.
-       have Landaui : i =O_ (0:V) cst (1:K^o) by apply (@bounded_landau (Linear Li)).
+       have Landaui : i =O_ (0:V) cst (1:K^o) by apply (@bounded_imply_landau (Linear Li)).
        by apply: (@linear_continuous K V W (Linear Li)).
      move=> x Hx ; apply: continuous_comp.
        + by apply: Ci.
